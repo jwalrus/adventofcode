@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def load():
     with open("day01.txt") as f:
         xs = f.readlines()
@@ -13,6 +16,14 @@ def part2(puzzle):
     return part1(puzzle, n=3)
 
 
+def part1_np(arr: np.array, n=1):
+    return np.sum(arr[n:] > arr[:-n])
+
+
+def part2_np(arr: np.array):
+    return part1_np(arr, n=3)
+
+
 class TestDay01:
 
     def test_part1_sample(self):
@@ -26,3 +37,9 @@ class TestDay01:
 
     def test_part2(self):
         assert part2(load()) == 1518
+
+    def test_part1_np(self):
+        assert part1(np.array(load())) == 1482
+
+    def test_part2_np(self):
+        assert part2(np.array(load())) == 1518
