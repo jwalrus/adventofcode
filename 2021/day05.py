@@ -21,15 +21,15 @@ def line(path: Path, include_diag=False) -> Iterable[Coord]:
         y_dir = 1 if y2 > y1 else -1
         return zip(range(x1, x2 + x_dir, x_dir), range(y1, y2 + y_dir, y_dir))
 
-    start, stop = path
-    if start.real == stop.real:
-        return (Coord(start.real, i) for i in ud(start.imag, stop.imag))
-    elif start.imag == stop.imag:
-        return (Coord(i, start.imag) for i in ud(start.real, stop.real))
-    elif include_diag:
-        return (Coord(i, j) for i, j in dg(start, stop))
-    else:
-        return []
+    match path:
+        case (l, r) if l.real == r.real:
+            return (Coord(r.real, i) for i in ud(l.imag, r.imag))
+        case (l, r) if l.imag == r.imag:
+            return (Coord(i, r.imag) for i in ud(l.real, r.real))
+        case (l, r) if include_diag:
+            return (Coord(i, j) for i, j in dg(l, r))
+        case _:
+            return []
 
 
 def part1(puzzle, include_diag=False):
