@@ -49,7 +49,7 @@ def part2(puzzle):
     return last_score
 
 
-class TestDay03:
+class TestDay04:
 
     def test_puzzle_input(self, puzzle):
         draws, boards = puzzle

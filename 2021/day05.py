@@ -42,7 +42,7 @@ def part2(puzzle):
     return part1(puzzle, include_diag=True)
 
 
-class TestDay03:
+class TestDay05:
 
     def test_puzzle_input(self, puzzle):
         assert len(puzzle) == 500
