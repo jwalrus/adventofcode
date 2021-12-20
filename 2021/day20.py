@@ -1,3 +1,4 @@
+import functools
 from functools import cache
 
 import more_itertools as mit
@@ -16,21 +17,30 @@ def neighbors(p):
     # @formatter:on
 
 
-def lookup_val(ns, image):
-    vals = ["1" if n in image else "0" for n in ns]
-    return int("".join(vals), 2)
+def lookup_val(ns, image, min_row, min_col, max_row, max_col, outside):
+    idx = 0
+    for r, c in ns:
+        idx <<= 1
+        idx |= ((r, c) in image)
+        idx |= outside and (r < min_row or r > max_row or c < min_col or c > max_col)
+    return idx
 
 
-def enhance_pixel(pixel, image, enhancer):
-    ns = neighbors(pixel)
-    enhancement_val = lookup_val(ns, image)
-    return enhancer[enhancement_val]
+def enhance(image, enhancer, outside):
+    (min_row, _), (max_row, _) = mit.minmax(image, key=lambda p: p[0])
+    (_, min_col), (_, max_col) = mit.minmax(image, key=lambda p: p[1])
+    # create new image
 
+    new_image = set()
+    for row in range(min_row - 10, max_row + 20):
+        for col in range(min_col - 10, max_row + 20):
+            pixel = (row, col)
+            ns = neighbors(pixel)
+            idx = lookup_val(ns, image, min_row, min_col, max_row, max_col, outside)
+            if enhancer[idx] == "#":
+                new_image.add(pixel)
 
-def enhance(image, enhancer):
-    image_set = {n for pixel in image for n in neighbors(pixel)}
-    return {pixel for pixel in image_set
-            if enhance_pixel(pixel, image, enhancer) == "1"}
+    return new_image
 
 
 def print_image(image):
@@ -44,21 +54,18 @@ def print_image(image):
     print()
 
 
-def part1(puzzle):
+def part1(puzzle, *, n=2):
     enhancer, image0 = puzzle
-    print("\n\nIMAGE 0")
-    print_image(image0)
-    image1 = enhance(image0, enhancer)
-    print("\n\nIMAGE 1")
-    print_image(image1)
-    print("\n\nIMAGE 2")
-    image2 = enhance(image1, enhancer)
-    print_image(image2)
-    return len(image2)
+    image_n = functools.reduce(
+        lambda img, n: enhance(img, enhancer, enhancer[0] == "#" and n % 2 == 1),
+        range(n),
+        image0
+    )
+    return len(image_n)
 
 
 def part2(puzzle):
-    return -1
+    return part1(puzzle, n=50)
 
 
 class TestDay20:
@@ -68,10 +75,10 @@ class TestDay20:
 
     def test_part1(self, puzzle):
         x = part1(puzzle)
-        assert x == 0
+        assert x == 5479
 
     def test_part2_sample(self, sample):
-        assert part2(sample) == 0
+        assert part2(sample) == 3351
 
     def test_part2(self, puzzle):
         assert part2(puzzle) == 0
@@ -79,14 +86,12 @@ class TestDay20:
 
 def parse_input(text):
     enhancer, image = [x.strip() for x in text.split("\n\n") if x != ""]
-    enhancer = ["1" if x == "#" else "0" for x in enhancer]
     image = [x.strip() for x in image.split("\n") if x != ""]
-    image = [["1" if x == "#" else "0" for x in row] for row in image]
 
     d = {(row, col)
          for row, vals in enumerate(image)
          for col, val in enumerate(vals)
-         if val == "1"}
+         if val == "#"}
 
     return enhancer, d
 
