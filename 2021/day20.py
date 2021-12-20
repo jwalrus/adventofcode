@@ -28,29 +28,9 @@ def enhance_pixel(pixel, image, enhancer):
 
 
 def enhance(image, enhancer):
-    # add neighbors
     image_set = {n for pixel in image for n in neighbors(pixel)}
-    (min_row, _), (max_row, _) = mit.minmax(image, key=lambda p: p[0])
-    (_, min_col), (_, max_col) = mit.minmax(image, key=lambda p: p[1])
-    # create new image
-
-    # new_image = set()
-    # for row in range(min_row - 1, max_row + 2):
-    #     for col in range(min_col - 1, max_row + 2):
-    #         pixel = (row, col)
-    #         new_val = enhance_pixel(pixel, image, enhancer)
-    #         if new_val == "1":
-    #             new_image.add(pixel)
-
-
-    new_image = set()
-    for pixel in image_set:
-        ns = neighbors(pixel)
-        enhancement_val = lookup_val(ns, image)
-        new_val = enhancer[enhancement_val]
-        if new_val == "1":
-            new_image.add(pixel)
-    return new_image
+    return {pixel for pixel in image_set
+            if enhance_pixel(pixel, image, enhancer) == "1"}
 
 
 def print_image(image):
@@ -83,16 +63,12 @@ def part2(puzzle):
 
 class TestDay20:
 
-    def test_enhance_pixel(self, puzzle):
-        enhancer, image = puzzle
-        assert enhance_pixel((0, 0), set(), enhancer) == "0"
-
     def test_part1_sample(self, sample):
         assert part1(sample) == 35
 
     def test_part1(self, puzzle):
         x = part1(puzzle)
-        assert x == 5326
+        assert x == 0
 
     def test_part2_sample(self, sample):
         assert part2(sample) == 0
