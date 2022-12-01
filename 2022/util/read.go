@@ -1,13 +1,25 @@
 package util
 
 import (
-	"fmt"
+	"bufio"
+	"os"
 )
 
-func Hello(name string) string {
-	return fmt.Sprintf("Hello, %s!\n", name)
-}
+func ReadInput(filename string) []string {
+	fs, err := os.Open(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer fs.Close()
 
-func ReadLines(filename string) []string {
-	return make([]string, 0)
+	scanner := bufio.NewScanner(fs)
+	scanner.Split(bufio.ScanLines)
+
+	var result = make([]string, 0)
+
+	for scanner.Scan() {
+		result = append(result, scanner.Text())
+	}
+
+	return result
 }
