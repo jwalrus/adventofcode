@@ -52,15 +52,41 @@ def part1(monkeys):
                 spoken[monkey.name] = monkey.op(left, rght)
 
         if spoken.get("root") is not None:
-            return int(spoken["root"])
+            return spoken["root"]
 
-    return 0
+    raise ValueError("failed to find root")
+
+
+def part2(monkeys):
+    queue0 = deque(monkeys)
+
+    li, ri = 0, 100_000_000_000_000_000_000
+    while li < ri:
+        mi = (ri + li) // 2
+        for _ in monkeys:
+            monkey = queue0.popleft()
+            if monkey.name == "humn":
+                monkey = monkey._replace(number=mi)
+            if monkey.name == "root":
+                monkey = monkey._replace(op=op.sub)
+            queue0.append(monkey)
+
+        result = part1(queue0)
+        if result == 0:
+            return mi
+        elif result < 0:
+            li, ri = li, mi
+        else:
+            li, ri = mi, ri
+
+    raise ValueError("nope :(")
 
 
 def main():
     with open(sys.argv[1], "r") as f:
         monkeys = [parse(line) for line in f.read().split("\n")]
         print("part1:", part1(monkeys))  # 268597611536314
+        print("part2:", part2(monkeys))  # 3451534022348
 
 
 if __name__ == "__main__":
