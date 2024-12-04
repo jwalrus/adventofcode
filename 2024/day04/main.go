@@ -15,7 +15,7 @@ func main() {
 func run(puzzle []string, f func(int, int, []string) int) int {
 	result := 0
 	for i, line := range puzzle {
-		for j, _ := range line {
+		for j := range line {
 			result += f(i, j, puzzle)
 		}
 	}
