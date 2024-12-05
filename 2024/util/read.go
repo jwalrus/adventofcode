@@ -3,6 +3,7 @@ package util
 import (
 	"bufio"
 	"os"
+	"strconv"
 )
 
 func ReadInput(filename string) []string {
@@ -22,4 +23,9 @@ func ReadInput(filename string) []string {
 	}
 
 	return result
+}
+
+func ToInt(s string) int {
+	i, _ := strconv.Atoi(s)
+	return i
 }
