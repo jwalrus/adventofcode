@@ -16,9 +16,9 @@ type Point struct {
 	C int
 }
 
-func (p Point) add(dr, dc int) Point {
+func (p Point) Add(o Point) Point {
 	return Point{
-		R: p.R + dr,
-		C: p.C + dc,
+		R: p.R + o.R,
+		C: p.C + o.C,
 	}
 }
